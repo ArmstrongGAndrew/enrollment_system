@@ -1,0 +1,119 @@
+Value (base class)
+Person
+	{
+		Name
+		Social Security Number
+	};
+
+Applicant
+	{
+			Is a Person
+		Accepted or Not (yet)	
+	};
+
+Member
+	{
+			Is a Person
+		ID Number
+		ID String (UANET)
+	};
+
+Department
+{
+		Has Employees
+	
+};
+
+Position
+{
+	Title
+		Is part of Department
+};
+
+Employee
+	{
+			Is a member
+		Position
+		Pay (wage)
+	};
+
+Student
+	{
+			Is a Member
+			Is an Applicant
+		Majors
+		Minors
+		Credits (mapping of Courses to earned credits)
+	};
+
+Building
+	{
+			Is part of School
+		Name
+		Classrooms
+	};
+
+Classroom
+	{
+			Is part of Building
+		Number
+	};
+
+Class
+	{
+		Classroom
+		Professor
+		Time
+		Number
+	};
+
+Course
+	{
+		Classes
+		Number
+		Credits
+		Prerequisites
+	};
+
+Subject
+	{
+			Has Courses
+		Number
+	};
+
+College
+	{
+			Has Departments
+		Title
+	};
+
+School
+	{
+		Colleges
+		Buildings
+		Faculty
+		Staff
+		Name
+		Location
+		State (true/false)
+	};
+
+Major
+	{
+		Courses
+	};
+
+Degree
+	{
+			Has Major
+			Has Minor
+		Type (ABET?)
+		Type (BA, BS, Ph.D, MD, ...)
+	};
+
+Minor
+	{
+		Courses
+	};
+
+
