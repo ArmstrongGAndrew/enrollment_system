@@ -1,0 +1,40 @@
+# Determined names based on a UA sharepoint database
+
+Arts and Sciences
+Applied Science and Technology
+Athletics
+Auxillary Services
+Board of Trustees
+Business Administration
+Business and Finance
+Capital Planning and Facilities Management
+Creative and Professional Arts
+Education
+Engineering
+Finance and Administration
+Fine and Applied Arts
+General Counsel
+Health Sciences and Human Services
+Honors College
+Human Resources
+Information Technology Services
+Instituational Research
+Law
+Mcnair Scholoar Program
+Medina County Univery Center
+Nursing
+Office of Academic Affairs
+Office of the President
+Polymer Science and Polymer Engineering
+Provost
+Public Affairs and Development
+Quaker Square Inn
+Research and Graduate School
+Stuent Affairs
+Summit College
+University Archives
+University College
+University Libraries
+University Press
+VP Finance
+Wayne College

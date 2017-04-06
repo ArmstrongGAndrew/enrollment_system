@@ -1,0 +1,60 @@
+# Names represent content from a UA database
+
+Academic Achievement Programs
+Academic Advisement Center
+Accessibility
+Accountancy
+Admissions
+Adult Focus
+Aerospace Studies
+Akron AAUP
+Allied Health Technology
+Alumni Association Center
+Application Systems Services
+Architects Office Archives
+Art
+Arts and Sciences Dean
+Associate VP and Controller
+Associate Studies
+Athletics
+Athetlics - Compliance
+Athletics External Relations
+Audio Visual Services
+Auditor's Office
+Barnes and Noble Bookstore
+Biology
+Biology-Wayne
+Biomedical Engineering
+Board of Trustees
+Business and Office Tech-Wayne
+Business Administration
+Business Administration Dean
+Business and Finance
+Business Technology
+CBA Dean's Office
+CBA Mobile Lab
+Center for Career Management
+Center for Ind. and Fam. Couns.
+Center for Policy Studies
+Central Stores
+Chemical and Biomolecular Engineering
+Chemistry
+Chemistry-Wayne
+Child Development Center
+Civil Engineering
+Classical Studies, Anthropology and Archaeology
+Collections Management
+Communications
+Computer Repair Service
+Computer Science
+Computer Solutions
+Computer Solutions Loaner Pool
+Computer Solutions-Stolen
+Confucius Institute
+Constr. Eng. Tech Program
+Controller
+Counseling
+Counseling, Testing and Career Center
+Graduate School
+Dining Services
+Electrical and Computer Engineering

@@ -1,0 +1,6 @@
+# Student database format: Name, UANET ID, ID Number
+# Name is realistic, UANET ID and ID Numbers are fake for testing purposes
+
+Armstrong Andrew,drunk,1111111
+Weisenberger Evan,hungry,2111111
+Lewis Chris,law,3111111
