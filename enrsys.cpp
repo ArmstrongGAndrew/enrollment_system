@@ -17,62 +17,85 @@
 #include <string>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <unordered_map>
 
 struct Value
 {
-	virtual ~Value() {}
+	virtual ~Value() {};
+	virtual int val() = 0; // Updates value and can return value local to each derived class
+	virtual void display() = 0;
+	int value;
 };
 
-struct Person // Base class for all people, not constrained to only the people qualified for enrollment
+
+struct Department
 : Value
 {
-	virtual ~Person() override {}
-	std::string name;
-	char ssn[9];
+  std::string dept;
+
+  Department() {dept = "Null";}
+  Department(std::string dept) {this->dept = dept;}
+
+  int val() override {value = 0;}
+  void display() override {std::cout << dept << ": ["<<value<<"]";}
+
+  void operator=(Department& target) {this->dept = target.dept;}
+  ~Department() override {}
 };
 
-struct Applicant
-: Person
+struct Position
+: Value
 {
-	virtual ~Applicant() override {}
-	bool accepted;
-	// An applicant can either be accepted or not (yet) accepted
+	bool faculty; // True if faculty position, false if staff position
+	std::string title;
+	Department dept;
+
+	Position() {title = "Null";}
+	Position(std::string title) {this->title = title;}
+	Position(Department dept) {this->title = "Null"; this->dept = dept;}
+
+	int val() override {}
+	void display() override {std::cout<<title<<" "<<dept.dept<<" "<<faculty<< "["<<value<<"]";}
+
+	~Position() {}
+	
 };
 
-struct Member // "Member" as in a member of the University of Akron who has a UANET ID and ID number
-: Person
+
+struct Class
+: Value
 {
-	virtual ~Member() override {}
+  int number;
+  int size;
+
+  Class() {number = -1; size = -1;}	
+  Class(int num) {} // Determine which member variable to assign value
+  Class(int number, int size) {this->number = number; this->size = size;}
+    // Dangerous if not cautious about parameter order. Class oop(30,2) = :(
+
+  virtual int val() override {}
+  virtual void display() override {std::cout<<number<<": "<<size<< " ["<<value<<"]";}
+
+  virtual ~Class() override {}
+};
+
+struct Course
+: Value
+{
+	std::vector<Class*> classes;
+	std::string title;
 	int number;
-	std::string id;	
+	double credits;
+
+	int val() override {}
+	void display() override {}
+
+	~Course() override {}
 };
-
-struct Employee
-: Member
-{
-	virtual ~Employee() override {}
-	double pay;
-
-};
-
-struct Student
-: Member, Applicant // A student must be an applicant
-{
-	~Student() override {}	
-	double gpa;
-};
-
-struct Professor
-: Member 
-{
-	~Professor() override {}
-		
-};
-
-
 
 struct Building
 : Value
@@ -80,6 +103,9 @@ struct Building
 	virtual ~Building() override {}
 	std::string name;
 	int number;
+
+	int val() override {}
+	void display() override {}
 };
 
 struct Classroom
@@ -87,35 +113,21 @@ struct Classroom
 {
 	virtual ~Classroom() override {}
 	int number;
+
+	int val() override {}
+	void display() override {}
 };
 
-struct Class
-: Value
-{
-	virtual ~Class() override {}
-	int number;
-	int size;
-};
 
-struct Course
-: Class
-{
-	virtual ~Course() override {}
-	std::vector<Class*> classes;
-	std::string title;
-	int number;
-
-};
-
-struct Department
-: Value
-{};
 
 struct College // An example of this would be the college of engineering at UA
 : Course, Department
 {
 	virtual ~College() override {}
 	std::vector<Course*> courses;
+
+	int val() override {}
+	void display() override {}
 };
 
 struct School // An example of this would be the University of Akron, or the Ohio State University
@@ -124,7 +136,83 @@ struct School // An example of this would be the University of Akron, or the Ohi
 	virtual ~School() override {}	
 	std::string name;
 	std::vector<College*> colleges;
+
+	int val() override {}
+	void display() override {}
 };
+
+struct Person // Base class for all people, not constrained to only the people qualified for enrollment
+: Value
+{
+	std::string name;
+	std::string ssn;
+
+
+	Person() {name = "Null"; ssn = "Null";}
+	Person(std::string str) {} // Check str for Integer char or non-integer char
+
+	virtual ~Person() override {}
+	virtual void parse(std::vector<std::string> lines) {} // Vector of strings for flexibility (multiple lines)
+	virtual int val() override {if(name == "Null" && ssn == "Null") value = 0; }
+	virtual void display() override {std::cout << name << ": " << ssn <<"\t"<<value;}
+
+};
+
+struct Applicant
+: Person
+{
+	bool accepted;
+
+	Applicant() {accepted = false;}
+	Applicant(bool accepted) {this->accepted = accepted;}
+
+	virtual int val() override {}
+	virtual void display() override {}
+
+	virtual ~Applicant() override {}
+
+	// An applicant can either be accepted or not (yet) accepted
+};
+
+struct Member // "Member" as in a member of the University of Akron who has a UANET ID and ID number
+: Person
+{
+	int number;
+	std::string id;	
+        
+	Member() {number = -1; id = "Null";}
+	Member(int number) {this->number = number; this->id = "Null";}
+	Member(std::string id) {this->id = id; this->number = -1;}
+	Member(std::string id, int number) {this->id = id; this->number = number;}
+	Member(int number, std::string id) {this->id = id; this->number = number;}
+	virtual ~Member() override {}
+};
+
+struct Employee
+: Member
+{
+	virtual ~Employee() override {}
+	std::unordered_map<Position*, double> positions;
+
+	int val() override {}
+	void display() override {}
+};
+
+struct Student
+: Member, Applicant // A student must be an applicant
+{
+	double gpa;
+	std::vector<Class> classes; // Can be in progress, taken, or will be taking
+	std::vector<Course> courses; // 
+
+	Student() {}
+	Student(double gpa) {}
+	int val() override {}
+	void display() override {}
+
+	~Student() override {}	
+};
+
 
 
 
