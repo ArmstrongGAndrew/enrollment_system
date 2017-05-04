@@ -22,6 +22,72 @@
 #include <sstream>
 #include <fstream>
 #include <unordered_map>
+#include <string>
+#include <locale>
+
+using namespace std;
+
+void move_separator(char *&f, char separator)
+{
+  while (*f != separator)
+    f++;
+}
+bool is_alpha(char *f)
+{
+  if (*f >= 'A' && *f <= 'z')
+    return true;
+  return false;
+}
+
+bool is_int(char *f)
+{
+	if (*f >= '0' && *f <= '9')
+		return true;
+	return false;
+}
+
+void move_int(char *&f)
+{
+  while (!is_int(f)) f++;
+}
+
+void move_alpha(char *&f)
+{
+  while (!is_alpha(f)) f++;
+}
+
+string parse_string(char *&f)
+{
+  string temp = "";
+  move_alpha(f);
+  while (is_alpha(f))
+    temp += *f++;
+  return temp;
+}
+
+int parse_int(char *&f)
+{
+  string temp = "";
+  move_int(f);
+
+  while (is_int(f))
+    temp += *f++;
+  return stoi(temp, nullptr, 10);
+}
+
+double parse_double(char *&f)
+{
+  string temp = "";
+  move_int(f);
+
+  while (is_int(f))
+    temp += *f++;
+  if (*f == '.')
+  	temp += *f++;
+  while (is_int(f))
+  	temp += *f++;
+  return stod(temp, nullptr);
+}
 
 struct Value
 {
@@ -36,8 +102,9 @@ struct Department
 : Value
 {
   std::string dept;
+  int number;
 
-  Department() {dept = "Null";}
+  Department() {dept = "Null"; number = -1;}
   Department(std::string dept) {this->dept = dept;}
 
   int val() override {value = 0;}
@@ -75,7 +142,7 @@ struct Class
   Class() {number = -1; size = -1;}	
   Class(int num) {} // Determine which member variable to assign value
   Class(int number, int size) {this->number = number; this->size = size;}
-    // Dangerous if not cautious about parameter order. Class oop(30,2) = :(
+
 
   virtual int val() override {}
   virtual void display() override {std::cout<<number<<": "<<size<< " ["<<value<<"]";}
@@ -109,7 +176,7 @@ struct Building
 };
 
 struct Classroom
-: Building
+: Value
 {
 	virtual ~Classroom() override {}
 	int number;
@@ -121,17 +188,19 @@ struct Classroom
 
 
 struct College // An example of this would be the college of engineering at UA
-: Course, Department
+: Value
 {
 	virtual ~College() override {}
 	std::vector<Course*> courses;
+	vector<Department*> departments;
+	Building loc;
 
 	int val() override {}
 	void display() override {}
 };
 
 struct School // An example of this would be the University of Akron, or the Ohio State University
-: College
+: Value
 {
 	virtual ~School() override {}	
 	std::string name;
@@ -192,7 +261,21 @@ struct Employee
 : Member
 {
 	virtual ~Employee() override {}
-	std::unordered_map<Position*, double> positions;
+	vector<pair<Position, double>> positions;
+
+	Employee() {}
+	Employee(Position pos, double pay) {
+		positions.push_back(make_pair(pos,pay));
+	}
+	Employee(vector<Position> pos, vector<double> pay)
+	{
+		if (pos.size() != pay.size()) { }
+		else {
+		for (int i = 0; i < pos.size(); i++) {
+			positions.push_back(make_pair(pos[i], pay[i]));
+		}
+	}
+	}
 
 	int val() override {}
 	void display() override {}
@@ -207,8 +290,11 @@ struct Student
 
 	Student() {}
 	Student(double gpa) {}
+
 	int val() override {}
-	void display() override {}
+	void display() override {
+		cout << Member::name << ": " << Member::id << "  " << Member::number << "\n";
+	}
 
 	~Student() override {}	
 };
@@ -218,16 +304,19 @@ struct Student
 
 
 // Load any type of file and return a string containing all raw content of the file
-std::string loadFile(std::string file)
-{	
-	std::string content;
-	std::ifstream data(file);
-	std::stringstream stream;
+std::string loadFile(std::string filename)
+{
+	ifstream file(filename);
+	string content;
 
-	stream << data.rdbuf();
-	content = stream.str();
+	file.seekg(0, ios::end);
+	content.reserve(file.tellg());
+	file.seekg(0, ios::beg);
 
-	data.close();
+	content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+
+	file.close();
+
 	return content;
 }
 
@@ -235,36 +324,92 @@ std::string loadFile(std::string file)
 
 // "member" below represents the member variable of the person object being parsed. There will be a
 // subparser implemented for each member variable of the object's class.
-void parse_Person_member(char *&f)
-{
-
-}
-void parse_Person_db(std::string people_db)
+vector<Person*> parse_Person_db(std::string people_db)
 {
 	std::string db = loadFile(people_db);
 	char * f = &db[0];
 	char * l = &db[0] + db.size();
 
-// This condition will change according to the format of the database
-	if (*f == '[') // Condition for detecting a new student 
+	vector<Person*> people;
+
+	while (f != l)
 	{
-		Value * v = new Person;
-		Person * pers = static_cast<Person*>(v);
-		++f;
+		Person * person = new Person;
 
-		if (*f >= A_CAP && *f <= Z_CAP) // Condition(s) for detecting a name
-		{
-			parse_Person_member(f); // "member" will likely be modified to "name" in future implementation
-		}
+		person->name = parse_string(f) + ", " + parse_string(f);
+		person->ssn = parse_int(f);
+		people.push_back(person);
+	}
 
-		if (*f >= ZERO && *f <= NINE)
-		{
-			parse_Person_member(f); // "member" will likely be modified to "ssn" in future implementation
-		}
-	}	
+	return people;
 }
+
+vector<Student> parse_Student_db(string student_db)
+{
+	string db = loadFile(student_db);
+
+	char *f = &db[0];
+	char *l = &db[db.size()-1];
+
+	vector<Student> students;
+
+	while (f != l)
+	{
+		Student * student = new Student;
+
+		//student->Member::name= parse_string(f) + ", " + parse_string(f);
+		
+		student->Member::name = parse_string(f);
+		student->Member::name += ", ";
+		student->Member::name += parse_string(f);
+		student->id = parse_string(f);
+		student->Member::number = parse_int(f);
+		student->accepted = true;
+		students.push_back(*student);
+	}
+	return students;
+}
+
+vector<Course> parse_Course_db(string course_db)
+{
+	string db = loadFile(course_db);
+	vector<Course> courses;
+
+	char *f = &db[0];
+	char *l = &db[db.size()-1];
+
+
+	while (f != l)
+	{
+		Course * course = new Course;
+		course->title = parse_string(f);
+		course->number = parse_int(f);
+		course->credits = parse_double(f);
+		courses.push_back(*course);
+	}
+	return courses;
+}
+
 
 int main()
 {
 	printf("\nTesting work in progress for successful compilation\n\n");
+	vector<Student> students = parse_Student_db("students.txt");
+	vector<Course> courses = parse_Course_db("courses.txt");
+
+	students[0].display();
+	students[0].courses.push_back(courses[0]);
+
+	Value *v = new Student::Member;
+	static_cast<Student::Member*>(v)->Member::name = "Andrew";
+	cout << static_cast<Student::Member*>(v)->Member::name;
+	v = new Employee;
+
+	Position p;
+	if (dynamic_cast<Employee*>(v))
+		static_cast<Employee*>(v)->positions.push_back(make_pair(p,8.10));
+	else
+		cout << "Value is not an Employee\n";
+
+	return 0;
 }
